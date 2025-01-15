@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image"
 import HEADER from "@/components/HEADER";
 import Navbar from "@/components/Navigation";
 import Footer from "@/components/FOOTER";
@@ -25,7 +26,7 @@ const ProductDetail = () => {
         {/* Product Image */}
         <div className="flex-1">
           <div className="border rounded-lg p-4">
-            <img
+            <Image
               src={product.image}
               alt={product.name}
               className="w-full h-auto rounded-md"

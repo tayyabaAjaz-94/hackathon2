@@ -165,6 +165,7 @@
 //   );
 // }
 "use client";
+import Image from "next/image"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -202,10 +203,14 @@ export default function CheckoutPage() {
       {/* Left Section */}
       <div className="flex-1">
         <h1 className="text-lg font-bold">How would you like to get your order?</h1>
-        <p className="text-sm text-gray-600 mt-2">
-          Customs regulation for India requires a copy of the recipient's KYC. The
-          address on the KYC must match the shipping address. Learn more.
-        </p>
+        <p>
+  Customs regulation for India requires a copy of the recipient&apos;s KYC.
+</p>
+<p>
+  The address on the KYC must match the recipient&apos;s shipping address.
+</p>
+
+       
 
         <div className="mt-6 space-y-4">
           <div>
@@ -301,7 +306,9 @@ export default function CheckoutPage() {
           </div>
 
           <div>
-            <h2 className="font-semibold">What's your PAN?</h2>
+          <p>
+  What&apos;s your PAN?
+</p>
             <Input
               name="pan"
               placeholder="PAN"
@@ -337,7 +344,7 @@ export default function CheckoutPage() {
           <p className="text-sm text-gray-600">Arrives Mon, 27 Mar - Wed, 12 Apr</p>
           <div className="mt-4 space-y-2">
             <div className="flex items-center">
-              <img src="/g1.png" alt="Shirt" className="w-12 h-12" />
+              <Image src="/g1.png" alt="Shirt" className="w-12 h-12" />
               <div className="ml-4">
                 <p>Nike Dri-FIT ADV Techknit</p>
                 <p>Size: M</p>
@@ -345,7 +352,7 @@ export default function CheckoutPage() {
               </div>
             </div>
             <div className="flex items-center">
-              <img src="/Rectangle (1).png" alt="Shoes" className="w-12 h-12" />
+              <Image src="/Rectangle (1).png" alt="Shoes" className="w-12 h-12" />
               <div className="ml-4">
                 <p>Nike Air Max 97</p>
                 <p>Size: 9</p>
