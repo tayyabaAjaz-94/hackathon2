@@ -16,7 +16,7 @@ const Navbar = () => {
       <ul className='gap-10 lg:gap-16 hidden md:flex'>
       <li className='menuLink'><Link href="/">Home</Link></li>
         <li className='menuLink'><Link href="/allproduct">All Products</Link></li>
-        <li className='menuLink'><Link href="/productdetail">Product Detail</Link></li>
+        {/* <li className='menuLink'><Link href="/productdetail">Product Detail</Link></li> */}
         <li className='menuLink'><Link href="/login">Login</Link></li>
         <li className='menuLink'><Link href="/joinus">Join Us</Link></li>
         <li className='menuLink'><Link href="/cart">Cart</Link></li>
@@ -46,13 +46,13 @@ const Navbar = () => {
     )
 
     }
-    {isMenuOpen && (
+    {/* {isMenuOpen && (
       <ul className='flex flex-col gap-4 mt-4 md:hidden'>
         <li><Link href="/productdetail" onClick={toggleMenu}>Product Detail</Link></li>
       </ul>
     )
 
-    }
+    } */}
     {isMenuOpen && (
       <ul className='flex flex-col gap-4 mt-4 md:hidden'>
         <li><Link href="/login" onClick={toggleMenu}>Login</Link></li>

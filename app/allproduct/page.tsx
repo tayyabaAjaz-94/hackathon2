@@ -6,6 +6,7 @@ import Navbar from "@/components/Navigation";
 import Sidebar from "@/components/sidebar";
 import ProductCard from "@/components/product-cards";
 import Footer from "@/components/FOOTER";
+import Link from "next/link";
 
 // Define the Product interface
 interface Product {
@@ -29,7 +30,6 @@ const client = createClient({
 });
 
 const Home = () => {
-  // Define the products state with the Product type
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const Home = () => {
           inventory
         }`;
 
-        const data: Product[] = await client.fetch(query); // Ensure the fetched data matches the Product type
+        const data: Product[] = await client.fetch(query);
         setProducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -65,13 +65,14 @@ const Home = () => {
         <Sidebar />
         <main className="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <ProductCard
-              key={product._id}
-              name={product.productName}
-              description={product.description}
-              price={`₹ ${product.price}`}
-              image={product.imageUrl}
-            />
+            <Link href={`/productdetail/${product._id}`} key={product._id}>
+              <ProductCard
+                name={product.productName}
+                description={product.description}
+                price={`₹ ${product.price}`}
+                image={product.imageUrl}
+              />
+            </Link>
           ))}
         </main>
       </div>
