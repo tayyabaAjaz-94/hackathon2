@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation"; // Correct hooks for navigation
+import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@sanity/client";
 import HEADER from "@/components/HEADER";
 import Navbar from "@/components/Navigation";
@@ -26,8 +26,8 @@ const client = createClient({
 
 const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
-  const { id } = useParams(); // Extract the product ID from the URL
-  const router = useRouter(); // Initialize router
+  const { id } = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -53,7 +53,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      router.push(`/cart?id=${product.id}`); // Redirect to cart with product ID as a query parameter
+      router.push(`/cart?id=${product.id}`);
     }
   };
 
@@ -74,28 +74,30 @@ const ProductDetail = () => {
       <Navbar />
 
       {/* Main Content */}
-      <div className="flex flex-1 p-8">
+      <div className="flex flex-col lg:flex-row flex-1 p-4 lg:p-8 gap-8">
         {/* Product Image */}
-        <div className="flex-1">
+        <div className="w-full lg:w-1/2">
           <div className="border rounded-lg p-4">
             <Image
               src={product.image}
               alt={product.name}
               width={500}
               height={500}
-              className="w-full h-auto rounded-md"
+              className="w-full h-auto rounded-md object-cover"
             />
           </div>
         </div>
 
         {/* Product Details */}
-        <div className="flex-1 pl-8">
-          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+        <div className="w-full lg:w-1/2">
+          <h1 className="text-2xl lg:text-3xl font-bold mb-4">{product.name}</h1>
           <p className="text-gray-700 mb-6">{product.description}</p>
-          <p className="text-2xl font-semibold text-gray-800 mb-4">₹ {product.price}</p>
+          <p className="text-xl lg:text-2xl font-semibold text-gray-800 mb-4">
+            ₹ {product.price}
+          </p>
           <button
             onClick={handleAddToCart}
-            className="px-6 py-2 bg-black text-white font-medium rounded-md hover:bg-gray-800"
+            className="w-full lg:w-auto px-6 py-2 bg-black text-white font-medium rounded-md hover:bg-gray-800"
           >
             Add to Cart
           </button>

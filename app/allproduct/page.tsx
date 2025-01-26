@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@sanity/client";
 import HEADER from "@/components/HEADER";
@@ -58,12 +58,17 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col">
       <HEADER />
       <Navbar />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col md:flex-row">
+        {/* Sidebar */}
+        <aside className="w-full md:w-1/4 bg-gray-100 p-4">
+          <Sidebar />
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
             <Link href={`/productdetail/${product._id}`} key={product._id}>
               <ProductCard

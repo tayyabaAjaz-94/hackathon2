@@ -1,14 +1,14 @@
 "use client";
+
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { Modal } from "@/components/Modal";
+import { useRouter } from "next/navigation";
 
-
-
-// CartItem Interface
 interface CartItem {
   id: string;
   name: string;
@@ -19,13 +19,14 @@ interface CartItem {
   quantity: number;
 }
 
-// Props Interface
-interface CheckoutPageProps {
-  cartItems: CartItem[];
-  subtotal: number;
-}
+function CheckoutContent() {
+  const searchParams = useSearchParams();
+  const cartItemsParam = searchParams.get("cartItems");
+  const subtotalParam = searchParams.get("subtotal");
 
-export default function CheckoutPage({ cartItems, subtotal }: CheckoutPageProps) {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [subtotal, setSubtotal] = useState<number>(0);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -40,13 +41,23 @@ export default function CheckoutPage({ cartItems, subtotal }: CheckoutPageProps)
     preferredAddress: false,
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
-    console.log("Cart Items:", cartItems);
+  const router = useRouter();
 
-
-    
-  
+  useEffect(() => {
+    try {
+      if (cartItemsParam) {
+        setCartItems(JSON.parse(decodeURIComponent(cartItemsParam)));
+      }
+      if (subtotalParam) {
+        setSubtotal(Number(subtotalParam));
+      }
+    } catch (error) {
+      console.error("Error parsing cart data:", error);
+    }
+  }, [cartItemsParam, subtotalParam]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -59,6 +70,51 @@ export default function CheckoutPage({ cartItems, subtotal }: CheckoutPageProps)
     setFormData((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.firstName) {
+      newErrors.firstName = "First name is required.";
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "Last name is required.";
+    }
+    if (!formData.address) {
+      newErrors.address = "Address is required.";
+    }
+    if (!formData.postalCode) {
+      newErrors.postalCode = "Postal code is required.";
+    }
+    if (!formData.locality) {
+      newErrors.locality = "Locality is required.";
+    }
+    if (!formData.email) {
+      newErrors.email = "Email is required.";
+    }
+    if (!formData.phone) {
+      newErrors.phone = "Phone number is required.";
+    }
+    if (!formData.pan) {
+      newErrors.pan = "PAN is required.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      setIsModalOpen(true);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    router.push("/");
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-6 max-w-screen-lg mx-auto">
@@ -73,116 +129,110 @@ export default function CheckoutPage({ cartItems, subtotal }: CheckoutPageProps)
         </p>
 
         <div className="mt-6 space-y-4">
-          {/* User Form */}
-          <div>
-            <h2 className="font-semibold">Enter your name and address:</h2>
-            <Input
-              name="firstName"
-              placeholder="First Name"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="my-2"
-            />
-            <Input
-              name="lastName"
-              placeholder="Last Name"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="my-2"
-            />
-            <Input
-              name="address"
-              placeholder="Address"
-              value={formData.address}
-              onChange={handleChange}
-              className="my-2"
-            />
-            <Input
-              name="postalCode"
-              placeholder="Postal Code"
-              value={formData.postalCode}
-              onChange={handleChange}
-              className="my-2"
-            />
-            <Input
-              name="locality"
-              placeholder="Locality"
-              value={formData.locality}
-              onChange={handleChange}
-              className="my-2"
-            />
-            <div className="my-2">
-              <Select
-                name="state"
-                value={formData.state}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, state: value }))}
-              >
-                <option value="India">India</option>
-                <option value="USA">USA</option>
-                {/* Add more states here */}
-              </Select>
-            </div>
-            <div className="my-2">
-              <Checkbox
-                id="saveAddress"
-                checked={formData.saveAddress}
-                onCheckedChange={(checked) =>
-                  handleCheckboxChange("saveAddress", !!checked)
-                }
+          <form onSubmit={handleSubmit}>
+            <div>
+              <h2 className="font-semibold">Enter your name and address:</h2>
+              <Input
+                name="firstName"
+                placeholder="First Name"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="my-2 w-full"
               />
-              <label htmlFor="saveAddress" className="ml-2">
-                Save this address to my profile
-              </label>
-            </div>
-            <div className="my-2">
-              <Checkbox
-                id="preferredAddress"
-                checked={formData.preferredAddress}
-                onCheckedChange={(checked) =>
-                  handleCheckboxChange("preferredAddress", !!checked)
-                }
+              {errors.firstName && <p className="text-red-500">{errors.firstName}</p>}
+              <Input
+                name="lastName"
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="my-2 w-full"
               />
-              <label htmlFor="preferredAddress" className="ml-2">
-                Make this my preferred address
-              </label>
+              {errors.lastName && <p className="text-red-500">{errors.lastName}</p>}
+              <Input
+                name="address"
+                placeholder="Address"
+                value={formData.address}
+                onChange={handleChange}
+                className="my-2 w-full"
+              />
+              {errors.address && <p className="text-red-500">{errors.address}</p>}
+              <Input
+                name="postalCode"
+                placeholder="Postal Code"
+                value={formData.postalCode}
+                onChange={handleChange}
+                className="my-2 w-full"
+              />
+              {errors.postalCode && (
+                <p className="text-red-500">{errors.postalCode}</p>
+              )}
+              <Input
+                name="locality"
+                placeholder="Locality"
+                value={formData.locality}
+                onChange={handleChange}
+                className="my-2 w-full"
+              />
+              {errors.locality && <p className="text-red-500">{errors.locality}</p>}
+              <div className="my-2 flex items-center">
+                <Checkbox
+                  id="saveAddress"
+                  checked={formData.saveAddress}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange("saveAddress", !!checked)
+                  }
+                />
+                <label htmlFor="saveAddress" className="ml-2">
+                  Save this address to my profile
+                </label>
+              </div>
+              <div className="my-2 flex items-center">
+                <Checkbox
+                  id="preferredAddress"
+                  checked={formData.preferredAddress}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange("preferredAddress", !!checked)
+                  }
+                />
+                <label htmlFor="preferredAddress" className="ml-2">
+                  Make this my preferred address
+                </label>
+              </div>
             </div>
-          </div>
-
-          {/* Contact Information */}
-          <div>
-            <h2 className="font-semibold">What&apos;s your contact information?</h2>
-            <Input
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              className="my-2"
-            />
-            <Input
-              name="phone"
-              placeholder="Phone Number"
-              value={formData.phone}
-              onChange={handleChange}
-              className="my-2"
-            />
-          </div>
-
-          {/* PAN */}
-          <div>
-            <p>What&apos;s your PAN?</p>
-            <Input
-              name="pan"
-              placeholder="PAN"
-              value={formData.pan}
-              onChange={handleChange}
-              className="my-2"
-            />
-          </div>
-
-          <Button className="mt-4 w-full">Continue</Button>
+            <div>
+              <h2 className="font-semibold">What&apos;s your contact information?</h2>
+              <Input
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="my-2 w-full"
+              />
+              {errors.email && <p className="text-red-500">{errors.email}</p>}
+              <Input
+                name="phone"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
+                className="my-2 w-full"
+              />
+              {errors.phone && <p className="text-red-500">{errors.phone}</p>}
+            </div>
+            <div>
+              <p>What&apos;s your PAN?</p>
+              <Input
+                name="pan"
+                placeholder="PAN"
+                value={formData.pan}
+                onChange={handleChange}
+                className="my-2 w-full"
+              />
+              {errors.pan && <p className="text-red-500">{errors.pan}</p>}
+            </div>
+            <Button className="mt-4 w-full">Continue</Button>
+          </form>
         </div>
       </div>
-
       {/* Right Section */}
       <div className="w-full md:w-1/3 border p-4 rounded-lg shadow-md">
         <h2 className="font-bold">Order Summary</h2>
@@ -196,14 +246,12 @@ export default function CheckoutPage({ cartItems, subtotal }: CheckoutPageProps)
             <p>Free</p>
           </div>
           <div className="flex justify-between">
-            <p>Subtotal</p>
+            <p>Total</p>
             <p>₹{subtotal ? subtotal.toFixed(2) : "0.00"}</p>
           </div>
         </div>
-
-        {/* Dynamic Cart Items */}
         <div className="mt-6 space-y-4">
-          {cartItems?.length > 0 ? (
+          {cartItems.length > 0 ? (
             cartItems.map((item) => (
               <div key={item.id} className="flex items-center">
                 <Image
@@ -224,12 +272,21 @@ export default function CheckoutPage({ cartItems, subtotal }: CheckoutPageProps)
           ) : (
             <p>Your cart is empty.</p>
           )}
-
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <h2>Your order has been placed successfully!</h2>
+        <p>Thank you for your purchase. We will process your order shortly.</p>
+        <Button onClick={closeModal}>Close</Button>
+      </Modal>
     </div>
+  );
+}
 
-
-
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
